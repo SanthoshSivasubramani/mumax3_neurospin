@@ -1,0 +1,38 @@
+// Test energy calculation for skyrmion barrier
+SetGridSize(64, 64, 1)
+SetCellSize(2e-9, 2e-9, 2e-9)
+
+Msat = 0.9 * 6.97e5
+Aex = 1.0e-11
+Dind = 2.5e-3
+
+// State 1: Uniform
+m = uniform(0, 0, 1)
+minimize()
+
+E_exch1 := E_exch.Get()
+E_demag1 := E_demag.Get()
+E_total1 := E_exch1 + E_demag1
+
+print("ENERGY_UNIFORM:", E_total1)
+
+// State 2: With DMI twist (skyrmion-like)
+m = uniform(0, 0, 1)
+B_ext = vector(0, 0, -0.3)
+minimize()
+B_ext = vector(0, 0, 0)
+minimize()
+
+E_exch2 := E_exch.Get()
+E_demag2 := E_demag.Get()
+E_total2 := E_exch2 + E_demag2
+
+print("ENERGY_TWISTED:", E_total2)
+
+// Barrier calculation
+delta_E := abs(E_total2 - E_total1)
+thermal_barrier := delta_E / (1.38e-23 * 300)
+
+print("ENERGY_BARRIER:", delta_E, thermal_barrier)
+
+print("ENERGY_COMPLETE")

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} - {{ site.title }}</title>
+    <meta name="description" content="{{ site.description }}">
+    <meta name="author" content="Dr. Santhosh Sivasubramani">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --text-color: #333;
+            --bg-color: #fff;
+            --code-bg: #f4f4f4;
+            --border-color: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-color);
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 2em;
+        }
+
+        header .version {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            margin-left: 10px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        header .author-info {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        nav {
+            margin-top: 15px;
+        }
+
+        nav a {
+            display: inline-block;
+            margin-right: 20px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        main {
+            min-height: 500px;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 15px;
+        }
+
+        h3 {
+            margin-top: 30px;
+        }
+
+        a {
+            color: var(--secondary-color);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--primary-color);
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            line-height: 1.4;
+        }
+
+        pre code {
+            padding: 0;
+            background: none;
+            color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #f0f8ff;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--secondary-color);
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 30px 0;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        footer .footer-links {
+            margin: 10px 0;
+        }
+
+        footer .footer-links a {
+            margin: 0 10px;
+        }
+
+        .highlight {
+            background: #fffbdd;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            nav a {
+                display: block;
+                margin: 5px 0;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            {{ site.title }}
+            <span class="version">v2.1.0</span>
+        </h1>
+        <p>{{ site.description }}</p>
+        <div class="author-info">
+            <strong>Dr. Santhosh Sivasubramani</strong> | 
+            IIT Delhi & University of Edinburgh | 
+            <a href="mailto:ragansanthosh@ieee.org">ragansanthosh@ieee.org</a>
+        </div>
+        <nav>
+            {% for item in site.navigation %}
+            <a href="{{ site.baseurl }}{{ item.url }}">{{ item.title }}</a>
+            {% endfor %}
+        </nav>
+    </header>
+
+    <main>
+        {{ content }}
+    </main>
+
+    <footer>
+        <p><strong>MuMax3-SAF-NeuroSpin v2.1.0</strong> &copy; 2025-2026 Dr. Santhosh Sivasubramani</p>
+        <p class="footer-links">
+            <a href="https://github.com/SanthoshSivasubramani/mumax3_neurospin" target="_blank">GitHub</a> |
+            <a href="https://github.com/SanthoshSivasubramani/mumax3_neurospin/issues" target="_blank">Issues</a> |
+            <a href="mailto:ragansanthosh@ieee.org">Contact</a>
+        </p>
+        <p style="font-size: 0.85em; color: #999;">
+            INTRINSIC Lab, IIT Delhi & April AI Hub, University of Edinburgh
+        </p>
+    </footer>
+</body>
+</html>

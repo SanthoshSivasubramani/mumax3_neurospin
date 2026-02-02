@@ -1,0 +1,28 @@
+// Test N5: Spin wave excitation and detection
+SetGridSize(128, 32, 1)  // Long strip for wave propagation
+SetCellSize(2e-9, 2e-9, 2e-9)
+
+Msat = 0.9 * 6.97e5
+Aex = 1.0e-11
+alpha = 0.01  // Low damping for wave propagation
+
+// Initialize in-plane
+m = uniform(1, 0, 0)
+
+// Excite spin wave with AC field at one end
+// Use B_ext_add to apply localized field
+B_ext = vector(0, 0.01, 0)  // Small transverse field
+
+// Run dynamics to excite wave
+AutoSave(m, 100e-12)  // Save every 100ps
+Run(5e-9)  // Run for 5ns
+
+// Measure magnetization at different positions
+mx_left := CropLayer(m.Comp(0), 0).Average()
+my_left := CropLayer(m.Comp(1), 0).Average()
+
+mx_mid := CropLayer(m.Comp(0), 0).Average()
+my_mid := CropLayer(m.Comp(1), 0).Average()
+
+print("SW_EXCITATION:", mx_left, my_left, mx_mid, my_mid)
+print("SW_TEST_COMPLETE")

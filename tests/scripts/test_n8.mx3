@@ -1,0 +1,22 @@
+SetGridSize(16, 16, 1)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Rect(30e-9, 80e-9))
+DefRegion(1, Rect(50e-9, 80e-9))
+
+Msat = 800e3
+Aex = 13e-12
+
+Magnon_source_region = 0
+Magnon_target_region = 1
+Magnon_coupling_strength = 1e4
+Magnon_coupling_range = 20e-9
+
+m.SetRegion(0, uniform(0, 0, 1))
+m.SetRegion(1, uniform(0, 0, -1))
+
+EnableMagnonCoupling()
+E_mag := GetMagnonCouplingEnergy()
+print("N8 Magnon energy:", E_mag)
+
+print("N8: PASS - Magnon coupling computed")

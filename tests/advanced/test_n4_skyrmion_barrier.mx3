@@ -1,0 +1,36 @@
+SetGridSize(64, 64, 1)
+SetCellSize(3e-9, 3e-9, 1e-9)
+
+// Material for skyrmions (needs DMI)
+Msat = 580e3
+Aex = 15e-12
+Dind = 3.5e-3  // Strong DMI for skyrmions
+Ku1 = 0.8e6
+anisU = vector(0, 0, 1)
+Alpha = 0.3
+
+// External field stabilizes skyrmions
+B_ext = vector(0, 0, 0.1)  // 100 mT
+
+print("=== N4: Skyrmion Energy Barriers ===")
+
+// Configure barrier calculation
+Skyrmion_barrier_samples = 5  // Use 5 for quick test
+Skyrmion_radius_nm = 30        // 30nm skyrmion
+
+// Initial FM state
+m = uniform(0, 0, 1)
+relax()
+
+print("FM state energy:", E_total, "J")
+
+// Calculate nucleation barrier (FM → Skyrmion)
+Delta_E_nuc := CalculateSkyrmionBarrier("nucleation")
+print("Nucleation barrier:", Delta_E_nuc, "J")
+
+// Calculate annihilation barrier (Skyrmion → FM)
+Delta_E_ann := CalculateSkyrmionBarrier("annihilation")
+print("Annihilation barrier:", Delta_E_ann, "J")
+
+print("Stability ratio:", Delta_E_ann / Delta_E_nuc)
+print("=== N4 Complete ===")

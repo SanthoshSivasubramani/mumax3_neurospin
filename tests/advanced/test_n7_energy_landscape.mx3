@@ -1,0 +1,31 @@
+SetGridSize(16, 16, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+// Test energy at different temps (no dynamics)
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+Temperature = 0
+E_0 := SAFEnergy()
+thermal_0 := abs(E_0) / (1.38e-23 * 0.01)
+
+Temperature = 100
+E_100 := SAFEnergy()
+thermal_100 := abs(E_100) / (1.38e-23 * 100)
+
+Temperature = 200
+E_200 := SAFEnergy()
+thermal_200 := abs(E_200) / (1.38e-23 * 200)
+
+print("N7_ENERGY:", 0, E_0, thermal_0)
+print("N7_ENERGY:", 100, E_100, thermal_100)
+print("N7_ENERGY:", 200, E_200, thermal_200)

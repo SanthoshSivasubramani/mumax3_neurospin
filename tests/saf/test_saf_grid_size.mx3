@@ -1,0 +1,31 @@
+// Test if SAF energy works with larger grids
+SetGridSize(32, 32, 2)  // Medium size
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+// Without minimize
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+E_no_min := SAFEnergy()
+print("NO_MINIMIZE:", E_no_min)
+
+// With minimize
+minimize()
+
+E_with_min := SAFEnergy()
+print("WITH_MINIMIZE:", E_with_min)
+
+print("GRID_TEST_COMPLETE")

@@ -1,0 +1,48 @@
+// Safe magnetization snapshots for visualization only
+
+// Configuration 1: Simple antiparallel SAF
+SetGridSize(64, 64, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3  // Simple constant coupling
+
+// Initialize antiparallel
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+// Don't relax - just save initial configuration
+save(m)
+saveas(m, "saf_antiparallel")
+
+print("Saved: SAF antiparallel configuration")
+
+// Configuration 2: Three-layer stack
+SetGridSize(48, 48, 6)
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+DefRegion(2, Layer(4).Add(Layer(5)))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+ApplyMaterial(2, "CoFeB")
+
+ClearSAFLayers()
+SetSAFLayers(0, 1)
+SetSAFLayers(1, 2)
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+m.setRegion(2, uniform(1, 0, 0))
+
+save(m)
+saveas(m, "saf_threelayer")
+
+print("Saved: Three-layer SAF configuration")

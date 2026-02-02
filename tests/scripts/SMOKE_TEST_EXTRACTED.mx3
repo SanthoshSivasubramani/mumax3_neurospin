@@ -1,0 +1,43 @@
+print("=== COMPREHENSIVE TEST ===")
+
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+print("--- Infrastructure ---")
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "Py")
+print("OK: Materials")
+
+print("--- SAF Core ---")
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+E := SAFEnergy()
+print("OK: SAF Energy =", E, "J")
+
+print("--- N1: Oscillatory ---")
+J_RKKY_oscillatory = 1
+J_RKKY_amplitude = -2e-3
+J_RKKY_wavelength = 1e-9
+E1 := SAFEnergy()
+print("OK: N1 E =", E1, "J")
+J_RKKY_oscillatory = 0
+
+print("--- N2: Temperature ---")
+J_RKKY_temp_dependent = 1
+J_RKKY_Tc = 673
+Temperature.SetRegion(0, 300)
+E2 := SAFEnergy()
+print("OK: N2 E =", E2, "J")
+
+print("--- N6: STDP ---")
+STDP_mode = 0
+dw := ApplyAdvancedSTDP(0.0, 0.010, 0.0, 0.0)
+print("OK: N6 dw =", dw)
+
+print("=== ALL WORKING ===")

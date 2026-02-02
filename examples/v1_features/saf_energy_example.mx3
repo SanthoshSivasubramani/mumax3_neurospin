@@ -1,0 +1,37 @@
+// MuMax3-SAF-NeuroSpin Test
+// Copyright  2024-2025 Dr. Santhosh Sivasubramani
+// INTRINSIC Lab, IIT Delhi
+
+// Most basic SAF energy test
+SetGridSize(16, 16, 2)  // Smaller grid
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+Msat.SetRegion(0, 6.97e5)  // Full Ms, no scaling
+Msat.SetRegion(1, 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+// Test 1: Simple parallel state
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+
+// DON'T minimize, just calculate energy directly
+E_parallel := SAFEnergy()
+print("BASIC_TEST_PARALLEL:", E_parallel)
+
+// Test 2: Antiparallel state
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+E_antiparallel := SAFEnergy()
+print("BASIC_TEST_ANTIPARALLEL:", E_antiparallel)
+
+print("BASIC_TEST_COMPLETE")

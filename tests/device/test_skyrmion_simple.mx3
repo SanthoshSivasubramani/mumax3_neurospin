@@ -1,0 +1,37 @@
+// Simplified skyrmion test with correct APIs
+SetGridSize(64, 64, 1)
+SetCellSize(2e-9, 2e-9, 2e-9)
+
+Msat = 0.9 * 6.97e5
+Aex = 1.0e-11
+Dind = 2.5e-3  // DMI for skyrmions
+
+// Start uniform up
+m = uniform(0, 0, 1)
+relax()
+
+mz_avg1 := m.average()[2]
+print("TEST1_UNIFORM:", mz_avg1)
+
+// Flip center region to seed skyrmion
+m = uniform(0, 0, 1)
+B_ext = vector(0, 0, -0.5)  // Apply down field at center
+relax()
+B_ext = vector(0, 0, 0)
+relax()
+
+mz_avg2 := m.average()[2]
+print("TEST2_AFTER_FLIP:", mz_avg2)
+
+// If skyrmion formed, average mz should be between -1 and +1
+// (some regions up, some down)
+skyrmion_exists := 0
+if (mz_avg2 > -0.9) {{
+    if (mz_avg2 < 0.9) {{
+        skyrmion_exists = 1
+    }}
+}}
+
+print("TEST3_SKYRMION_DETECTED:", skyrmion_exists, mz_avg2)
+
+print("COMPLETE")

@@ -1,0 +1,29 @@
+// Test with original working cell size
+SetGridSize(64, 32, 2)  // Large grid
+SetCellSize(3e-9, 3e-9, 2e-9)  // working examples
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+E_before := SAFEnergy()
+print("BEFORE_MINIMIZE:", E_before)
+
+minimize()
+
+E_after := SAFEnergy()
+print("AFTER_MINIMIZE:", E_after)
+
+print("CELLSIZE_TEST_COMPLETE")

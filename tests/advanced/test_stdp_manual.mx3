@@ -1,0 +1,31 @@
+SetGridSize(16, 16, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+// USE NEUROMORPHIC DEVICE
+ApplyNeuromorphicDevice("p-MTJ")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -0.8e-3
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+
+minimize()
+
+// TRY N6: STDP
+InitSTDP()
+
+t_pre := 0.0
+t_post := 10e-3
+V_gate := 1.0
+t_V := 1e-9
+
+ApplyAdvancedSTDP(t_pre, t_post, V_gate, t_V)
+
+print("STDP applied successfully")

@@ -1,0 +1,37 @@
+SetGridSize(64, 64, 1)
+SetCellSize(2e-9, 2e-9, 10e-9)
+
+J_oe := 1e12
+J_current = J_oe
+wire_width = 100e-9
+wire_thickness = 10e-9
+EnableOersted()
+Run(1e-12)
+
+// Use manual region definitions to avoid YRange bug
+// Bottom region: y cells below center
+for y:=2; y<31; y++ {
+    for x:=0; x<64; x++ {
+        DefRegionCell(100, x, y, 0)
+    }
+}
+
+// Top region: y cells above center
+for y:=33; y<62; y++ {
+    for x:=0; x<64; x++ {
+        DefRegionCell(101, x, y, 0)
+    }
+}
+
+B_top := B_Oersted.Region(101).average()
+B_bot := B_Oersted.Region(100).average()
+
+print("F4: Top Bz =", B_top[2], "T")
+print("F4: Bot Bz =", B_bot[2], "T")
+
+if !IsNaN(B_top[2]) && !IsNaN(B_bot[2]) && B_top[2] * B_bot[2] < 0 {
+    print("F4: PASS - Opposite signs confirmed!")
+    print("F4: Physics is CORRECT - Oersted field works!")
+} else {
+    print("F4: FAIL")
+}

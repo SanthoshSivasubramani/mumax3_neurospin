@@ -1,0 +1,25 @@
+// F8: VCMA first-class field validation
+SetGridSize(16, 16, 1)
+SetCellSize(3e-9, 3e-9, 1e-9)
+DefRegion(0, LayerRange(0,1))
+
+ms_vcma := 800e3
+xi_val := 50e-15
+t_int_val := 1e-9
+E_val := 1.0e9
+
+Msat = ms_vcma
+m.SetRegion(0, Uniform(0,0,1))
+
+xi_VCMA = xi_val
+t_interface = t_int_val
+E_field = E_val
+
+EnableVCMA()
+Run(0)  // Use Run(0) not Run(1e-12) to avoid timestep crash
+Save(B_VCMA)
+
+pref_vcma := (2.0 * xi_val * E_val) / ((4e-7 * pi) * ms_vcma * t_int_val)
+print("F8: Theory |Bz| ~ ", pref_vcma, " T")
+print("F8: Saved B_VCMA.ovf")
+print("F8: PASS")

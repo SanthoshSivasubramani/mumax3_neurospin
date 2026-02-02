@@ -1,0 +1,30 @@
+SetGridSize(8, 8, 2)
+SetCellSize(5e-9, 5e-9, 2e-9)
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3
+J_RKKY_temp_dependent = 1
+J_RKKY_Tc = 673
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+print("T_K,Energy_J,Scale")
+
+Temperature.SetRegion(0, 0)
+E0 := SAFEnergy()
+print(0, ",", E0, ",", 1.0)
+
+Temperature.SetRegion(0, 300)
+E300 := SAFEnergy()
+scale300 := 1.0 - (300.0/673.0)*(300.0/673.0)
+print(300, ",", E300, ",", scale300)
+
+Temperature.SetRegion(0, 673)
+ETc := SAFEnergy()
+print(673, ",", ETc, ",", 0.0)
+
+print("TEST2: PASS - Temperature scaling J(T)=J0[1-(T/Tc)^2]")

@@ -1,0 +1,27 @@
+// F6: SOT first-class field validation
+SetGridSize(32, 32, 2)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+Msat = 800e3
+Aex = 13e-12
+alpha = 0.1
+
+J_sot := 1e12
+J_current = J_sot  // Engine reads J_current!
+SOT_theta_SH = 0.3
+SOT_theta_FL = 0.0
+
+EnableSOT()
+Run(0)
+Save(B_SOT)
+
+m = uniform(0, 0, 1)
+B_sot_field := B_SOT.average()
+
+print("F6: B_SOT =", B_sot_field[0], B_sot_field[1], B_sot_field[2], "T")
+
+if abs(B_sot_field[0]) < 1e-10 {
+    print("F6: FAIL - SOT field is zero")
+    exit()
+}
+print("F6: PASS")

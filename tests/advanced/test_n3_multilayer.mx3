@@ -1,0 +1,38 @@
+SetGridSize(8, 8, 6)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+// 3-layer SAF stack
+DefRegion(0, Layer(0).Add(Layer(1)))  // Bottom FM
+DefRegion(1, Layer(2).Add(Layer(3)))  // Middle FM
+DefRegion(2, Layer(4).Add(Layer(5)))  // Top FM
+
+// Define two interfaces
+SetSAFLayers(0, 1)  // Bottom ↔ Middle
+SetSAFLayers(1, 2)  // Middle ↔ Top
+
+EnableSAF()
+J_RKKY = -2e-3
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+ApplyMaterial(2, "CoFeB")
+
+// Alternating magnetization
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+m.setRegion(2, uniform(1, 0, 0))
+
+print("=== N3: Multi-Layer SAF Test ===")
+
+E3layer := SAFEnergy()
+print("3-layer total energy:", E3layer, "J")
+print("Expected: 2x single interface energy")
+
+// Compare to single interface
+ClearSAFLayers()
+SetSAFLayers(0, 1)
+Esingle := SAFEnergy()
+print("Single interface:", Esingle, "J")
+print("Ratio:", E3layer / Esingle, "(should be ~2)")
+
+print("=== N3 Complete ===")

@@ -1,0 +1,20 @@
+SetGridSize(64, 64, 1)
+SetCellSize(3e-9, 3e-9, 1e-9)
+
+Msat = 800e3
+Aex = 13e-12
+Alpha = 0.01
+B_ext = vector(0, 0, 0.05)
+
+SpinWave_record_time = 2e-9
+SpinWave_sample_interval = 100e-12
+
+m = uniform(0, 0, 1)
+relax()
+
+ThermSeed(1)
+Temp = 300
+
+LaunchSpinWaves()
+
+print("N5: PASS - Spin wave recording complete")

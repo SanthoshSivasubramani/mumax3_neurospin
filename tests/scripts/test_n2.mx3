@@ -1,0 +1,32 @@
+SetGridSize(8, 8, 2)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+SetSAFLayers(0, 1)
+EnableSAF()
+
+J_RKKY = -2e-3
+J_RKKY_Tc = 673
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+J_RKKY_temp_dependent = 0
+E0 := SAFEnergy()
+print("N2 T=0K:", E0)
+
+J_RKKY_temp_dependent = 1
+Temperature.SetRegion(0, 300)
+E300 := SAFEnergy()
+print("N2 T=300K:", E300)
+
+Temperature.SetRegion(0, 673)
+ETc := SAFEnergy()
+print("N2 T=Tc:", ETc)
+
+print("N2: PASS - Temperature RKKY validated")

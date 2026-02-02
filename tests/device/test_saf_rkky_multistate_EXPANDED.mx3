@@ -1,0 +1,146 @@
+// ============================================================================
+// EXPANDED: SAF-RKKY Multi-State Validation
+// Exports complete dataset
+// ============================================================================
+
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+// 2-layer SAF
+DefRegion(0, Layer(0).Add(Layer(1)))  // Bottom FM
+DefRegion(1, Layer(2).Add(Layer(3)))  // Top FM
+
+EnableSAF()
+SetSAFLayers(0, 1)
+J_RKKY = -2e-3  // -2 mJ/m²
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+alpha = 0.1  // High damping for stability
+MaxErr = 1e-4
+MinDt = 1e-15
+MaxDt = 1e-12
+
+// Initial state
+m.setRegion(0, uniform(0, 0, 1))
+m.setRegion(1, uniform(0, 0, 1))
+
+print("=== SAF-RKKY Multi-State Test (EXPANDED) ===")
+print("Generating complete dataset")
+print("")
+
+// Test 11 states
+N_states := 11
+min_angle_sep := 180.0
+max_angle_sep := 0.0
+prev_angle := 0.0
+
+// Open CSV file for detailed output
+tableadd(Edens_total)
+tableadd(ext_topologicalcharge)
+
+print("State,Field_x_T,Field_y_T,Angle_deg,Energy_J,Energy_kT,Weight,Delta_theta_deg")
+
+for i := 0; i < N_states; i = i + 1 {
+    theta := i * pi / (N_states - 1)
+    Bx := 0.02 * cos(theta)
+    By := 0.02 * sin(theta)
+    
+    B_ext = vector(Bx, By, 0)
+    
+    relax()
+    
+    // Get magnetizations
+    mx0 := m.Region(0).average()[0]
+    my0 := m.Region(0).average()[1]
+    mz0 := m.Region(0).average()[2]
+    
+    mx1 := m.Region(1).average()[0]
+    my1 := m.Region(1).average()[1]
+    mz1 := m.Region(1).average()[2]
+    
+    // Calculate angle
+    dot_product := mx0*mx1 + my0*my1 + mz0*mz1
+    if dot_product > 1.0 {
+        dot_product = 1.0
+    }
+    if dot_product < -1.0 {
+        dot_product = -1.0
+    }
+    
+    angle := acos(dot_product) * 180.0 / pi
+    
+    // Energy
+    E_rkky := SAFEnergy()
+    kT := 1.38e-23 * 300.0
+    E_kT := E_rkky / kT
+    
+    // Synaptic weight
+    weight := cos(angle * pi / 180.0)
+    
+    // Angular separation
+    delta_theta := 0.0
+    if i > 0 {
+        delta_theta = angle - prev_angle
+        angle_sep := abs(delta_theta)
+        if angle_sep < min_angle_sep {
+            min_angle_sep = angle_sep
+        }
+        if angle_sep > max_angle_sep {
+            max_angle_sep = angle_sep
+        }
+    }
+    
+    // Print CSV line
+    print(sprintf("%d,%.6e,%.6e,%.2f,%.6e,%.2f,%+.4f,%.2f",
+                  i, Bx, By, angle, E_rkky, E_kT, weight, delta_theta))
+    
+    prev_angle = angle
+    
+    // Save key snapshots
+    if i == 0 {
+        snapshot(m)
+    }
+    if i == 5 {
+        snapshot(m)
+    }
+    if i == 10 {
+        snapshot(m)
+    }
+}
+
+print("")
+print("=== Statistics ===")
+expected_sep := 180.0 / (N_states - 1)
+print(sprintf("Expected separation: %.2f deg", expected_sep))
+print(sprintf("Minimum separation: %.2f deg", min_angle_sep))
+print(sprintf("Maximum separation: %.2f deg", max_angle_sep))
+print(sprintf("Thermal energy (300K): %.3e J", 1.38e-23 * 300.0))
+
+print("")
+if min_angle_sep > 5.0 {
+    print(sprintf("PASS: %.2f deg > 5 deg threshold", min_angle_sep))
+    est_states := 180.0 / min_angle_sep
+    print(sprintf("Estimated states: ~%.0f", est_states))
+} else {
+    print(sprintf("PARTIAL: %.2f deg (coarse sweep)", min_angle_sep))
+}
+
+print("")
+print("=== STDP Validation ===")
+InitSTDP()
+
+print("LTP test (dt=+10ms):")
+ApplyAdvancedSTDP(0.0, 0.010, 0.0, 0.0)
+
+print("LTD test (dt=-10ms):")
+ApplyAdvancedSTDP(0.010, 0.0, 0.0, 0.0)
+
+print("Voltage-gated (V=1.0V):")
+ApplyAdvancedSTDP(0.0, 0.010, 1.0, 0.005)
+
+print("")
+print("VALIDATION COMPLETE")
+print("Output: test_saf_rkky_multistate_EXPANDED.out/")
+save(m)

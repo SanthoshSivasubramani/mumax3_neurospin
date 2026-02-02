@@ -1,0 +1,41 @@
+// Simplest possible 3-layer test
+SetGridSize(16, 16, 6)
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+DefRegion(2, Layer(4).Add(Layer(5)))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+ApplyMaterial(2, "CoFeB")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+Msat.SetRegion(2, 0.9 * 6.97e5)
+
+print("SETUP_OK")
+
+SetSAFLayers(0, 1)
+SetSAFLayers(1, 2)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+print("SAF_OK")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+m.setRegion(2, uniform(1, 0, 0))
+
+print("INIT_OK")
+
+minimize()
+
+print("MINIMIZE_OK")
+
+a := m.Region(0).average()[0]
+b := m.Region(1).average()[0]
+c := m.Region(2).average()[0]
+
+print("TEST:", a, b, c)
+print("COMPLETE")

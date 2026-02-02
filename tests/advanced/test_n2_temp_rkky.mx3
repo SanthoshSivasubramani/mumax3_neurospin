@@ -1,0 +1,44 @@
+SetGridSize(8, 8, 2)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+SetSAFLayers(0, 1)
+EnableSAF()
+
+J_RKKY = -2e-3
+J_RKKY_Tc = 673  // CoFeB Curie temp
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+print("=== N2: Temperature-Dependent RKKY ===")
+
+// Test 1: No temperature dependence
+J_RKKY_temp_dependent = 0
+E0 := SAFEnergy()
+print("No T-dep (T=0K): E =", E0, "J")
+
+// Test 2: Room temperature
+J_RKKY_temp_dependent = 1
+Temperature.SetRegion(0, 300)
+E300 := SAFEnergy()
+scale300 := 1 - (300/673)*(300/673)
+print("T=300K: E =", E300, "J, expected scale =", scale300)
+
+// Test 3: Half Tc
+Temperature.SetRegion(0, 336.5)
+E_half := SAFEnergy()
+scale_half := 1 - (336.5/673)*(336.5/673)
+print("T=Tc/2: E =", E_half, "J, expected scale =", scale_half)
+
+// Test 4: At Tc
+Temperature.SetRegion(0, 673)
+E_Tc := SAFEnergy()
+print("T=Tc: E =", E_Tc, "J (should be ~0)")
+
+print("=== N2 Complete ===")

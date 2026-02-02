@@ -1,0 +1,52 @@
+title: MuMax3-SAF-NeuroSpin
+description: Advanced Micromagnetic Simulation Platform for SAF Structures and Neuromorphic Computing
+baseurl: "/mumax3_neurospin"
+url: "https://SanthoshSivasubramani.github.io"
+
+author:
+  name: Dr. Santhosh Sivasubramani
+  email: ragansanthosh@ieee.org
+  affiliations:
+    - INTRINSIC Lab, Centre for Sensors Instrumentation and Cyber Physical System Engineering (SeNSE), Indian Institute of Technology Delhi, New Delhi, India
+    - April AI Hub, Centre for Electronic Frontiers, The University of Edinburgh, Edinburgh, United Kingdom
+
+theme: jekyll-theme-minimal
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Collections
+collections:
+  api:
+    output: true
+    permalink: /api/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: API Reference
+    url: /api/
+  - title: Examples
+    url: /examples/
+  - title: Tutorials
+    url: /tutorials/
+  - title: Releases
+    url: /releases/
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
