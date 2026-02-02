@@ -13,7 +13,9 @@
 **Contact:** ssivasub@iitd.ac.in, ssivasub@ed.ac.uk, ragansanthosh@ieee.org  
 **Repository:** https://github.com/SanthoshSivasubramani/mumax3-neurospin  
 **Website:** https://intrinsic.iitd.ac.in/neurospin/ 
+
 **Github_Page:** https://santhoshsivasubramani.github.io/mumax3_neurospin/ 
+
 **License:** GNU GPL v3.0
 
 ---
