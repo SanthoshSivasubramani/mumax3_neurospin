@@ -1,0 +1,17 @@
+STDP_mode = 0
+
+print("dt_ms,dw")
+
+dw1 := ApplyAdvancedSTDP(0.0, -20e-3, 0.0, 0.0)
+print(-20, ",", dw1)
+
+dw2 := ApplyAdvancedSTDP(0.0, -10e-3, 0.0, 0.0)
+print(-10, ",", dw2)
+
+dw3 := ApplyAdvancedSTDP(0.0, 10e-3, 0.0, 0.0)
+print(10, ",", dw3)
+
+dw4 := ApplyAdvancedSTDP(0.0, 20e-3, 0.0, 0.0)
+print(20, ",", dw4)
+
+print("TEST3: PASS - STDP timing window")

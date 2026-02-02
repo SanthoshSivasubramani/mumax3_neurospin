@@ -1,0 +1,40 @@
+// F1: J_RKKY sign convention (negative = AF coupling)
+// DEFINITIVE TEST: Comparing Parallel vs Antiparallel energy levels
+
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+SetSAFLayers(0, 1)
+EnableSAF()
+
+// Standard AF coupling
+J_RKKY = -1e-3
+
+// Case 1: Parallel state (High Energy)
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+E_P := GetSAFRKKYEnergy()
+print("F1: Parallel State Energy (should be +) =", E_P, "J")
+
+// Case 2: Antiparallel state (Low Energy/Stable)
+m.setRegion(0, uniform( 1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+E_AP := GetSAFRKKYEnergy()
+print("F1: Antiparallel State Energy (should be -) =", E_AP, "J")
+
+// Final Check
+if E_AP < 0 && E_P > 0 {
+    print("F1: PASS - Energy signs are correct (AF coupling verified)")
+} else {
+    print("F1: FAIL - Energy logic reversed or zero")
+}
+
+if E_AP < E_P {
+    print("F1: PASS - Antiparallel state is energetically favorable")
+    print("F1: RKKY Physics is CORRECTLY IMPLEMENTED")
+} else {
+    print("F1: FAIL - Parallel state should not be lower energy")
+}

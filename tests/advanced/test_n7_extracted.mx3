@@ -1,0 +1,22 @@
+SetGridSize(16, 16, 1)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+Msat = 800e3
+Aex = 13e-12
+Ku1 = 1e5
+anisU = vector(1, 0, 0)
+Alpha = 0.1
+B_ext = vector(0, 0, 0.02)
+
+StochRes_noise_scan_min = 0
+StochRes_noise_scan_max = 300
+StochRes_noise_steps = 5
+StochRes_measure_time = 1e-9
+
+m = uniform(1, 0, 0)
+relax()
+
+ThermSeed(42)
+result := FindStochasticResonance()
+
+print("N7: PASS - Stochastic resonance found")

@@ -1,0 +1,30 @@
+SetGridSize(128, 128, 1)
+SetCellSize(3e-9, 3e-9, 1e-9)
+
+// Permalloy for clean spin waves
+Msat = 800e3
+Aex = 13e-12
+Alpha = 0.01  // Low damping
+
+B_ext = vector(0, 0, 0.05)  // 50 mT bias
+
+print("=== N5: Spin Wave Dispersion ===")
+
+// Configure recording
+SpinWave_record_time = 5e-9        // 5 ns
+SpinWave_sample_interval = 50e-12  // 50 ps
+
+// Initialize and relax
+m = uniform(0, 0, 1)
+relax()
+
+// Apply thermal excitation to launch spin waves
+ThermSeed(1)
+Temp = 300  // Room temperature creates thermal magnons
+
+print("Starting spin wave recording with thermal excitation...")
+
+// Record dynamics
+LaunchSpinWaves()
+
+print("=== N5 Complete ===")

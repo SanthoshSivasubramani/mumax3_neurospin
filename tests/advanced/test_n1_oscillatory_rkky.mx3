@@ -1,0 +1,40 @@
+SetGridSize(16, 16, 8)
+SetCellSize(5e-9, 5e-9, 1e-9)
+
+// Define 2 layers with 8nm total spacer
+DefRegion(0, Layer(0).Add(Layer(1)).Add(Layer(2)).Add(Layer(3)))
+DefRegion(1, Layer(4).Add(Layer(5)).Add(Layer(6)).Add(Layer(7)))
+
+SetSAFLayers(0, 1)
+EnableSAF()
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+print("=== N1: Oscillatory RKKY Test ===")
+
+// Test 1: Constant coupling
+J_RKKY = -2e-3
+J_RKKY_oscillatory = 0  // Off
+E_const := SAFEnergy()
+print("Constant J=-2e-3: E =", E_const, "J")
+
+// Test 2: Oscillatory coupling
+J_RKKY_oscillatory = 1  // On (use 1 instead of true)
+J_RKKY_amplitude = -2e-3
+J_RKKY_wavelength = 1e-9      // 1nm period
+J_RKKY_phase = 0
+J_RKKY_decay_length = 0       // No decay
+
+E_osc := SAFEnergy()
+print("Oscillatory (λ=1nm): E =", E_osc, "J")
+
+// Test 3: With exponential decay
+J_RKKY_decay_length = 5e-9    // 5nm decay
+E_decay := SAFEnergy()
+print("With decay (λ_D=5nm): E =", E_decay, "J")
+
+print("=== N1 Test Complete ===")

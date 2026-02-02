@@ -1,0 +1,90 @@
+/*
+ * Energy Breakdown Extraction - STABLE VERSION
+ * Reduced field strength to avoid timestep crash
+ */
+
+// ===== DEVICE PARAMETERS =====
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+// Define regions (2-layer SAF)
+DefRegion(0, Layer(0).Add(Layer(1)))  // Bottom FM
+DefRegion(1, Layer(2).Add(Layer(3)))  // Top FM
+
+// ===== SAF-RKKY SETUP (CORRECT ORDER!) =====
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3
+
+// Material parameters
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+// INCREASED damping for MORE stability
+alpha = 0.3  // Was 0.1, now higher
+MaxErr = 5e-4  // Was 1e-4, now more relaxed
+MinDt = 1e-15
+MaxDt = 5e-13  // Was 1e-12, now smaller max step
+
+// Temperature
+Temp = 300
+
+// ===== INITIALIZE MAGNETIZATION =====
+m.setRegion(0, uniform(0, 0, 1))
+m.setRegion(1, uniform(0, 0, 1))
+
+// ===== PRINT HEADER =====
+print("State,Bx,By,Angle,E_total,E_exch,E_demag,E_anis,E_Zeeman,E_RKKY,E_kT")
+
+// ===== REDUCED FIELD SWEEP (21 states) =====
+N_states := 21
+
+for i := 0; i < N_states; i = i + 1 {
+    // REDUCED field to 10 mT (was 20 mT)
+    theta := i * pi / (N_states - 1)
+    Bx := 0.01 * cos(theta)  // REDUCED from 0.02
+    By := 0.01 * sin(theta)  // REDUCED from 0.02
+    
+    B_ext = vector(Bx, By, 0)
+    
+    // Relax with more steps
+    relax()
+    
+    // Extract energy terms
+    e_tot := E_total.Get()
+    e_exch := E_exch.Get()
+    e_demag := E_demag.Get()
+    e_anis := E_anis.Get()
+    e_zeeman := E_Zeeman.Get()
+    e_rkky := SAFEnergy()
+    
+    // Calculate thermal stability
+    kB := 1.380649e-23
+    T := 300.0
+    e_kT := e_rkky / (kB * T)
+    
+    // Calculate interlayer angle
+    mx0 := m.Region(0).average()[0]
+    my0 := m.Region(0).average()[1]
+    mz0 := m.Region(0).average()[2]
+    mx1 := m.Region(1).average()[0]
+    my1 := m.Region(1).average()[1]
+    mz1 := m.Region(1).average()[2]
+    
+    dot_product := mx0*mx1 + my0*my1 + mz0*mz1
+    
+    if dot_product > 1.0 {
+        dot_product = 1.0
+    }
+    if dot_product < -1.0 {
+        dot_product = -1.0
+    }
+    
+    angle := acos(dot_product) * 180.0 / pi
+    
+    // Print CSV line
+    print(sprintf("%d,%.6e,%.6e,%.2f,%.6e,%.6e,%.6e,%.6e,%.6e,%.6e,%.2f", 
+                  i, Bx, By, angle, e_tot, e_exch, e_demag, e_anis, e_zeeman, e_rkky, e_kT))
+}
+
+print("=== Energy extraction complete ===")

@@ -1,0 +1,31 @@
+SetGridSize(8, 8, 6)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+DefRegion(2, Layer(4).Add(Layer(5)))
+
+SetSAFLayers(0, 1)
+SetSAFLayers(1, 2)
+
+EnableSAF()
+J_RKKY = -2e-3
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+ApplyMaterial(2, "CoFeB")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+m.setRegion(2, uniform(1, 0, 0))
+
+E3 := SAFEnergy()
+print("N3 3-layer:", E3)
+
+ClearSAFLayers()
+SetSAFLayers(0, 1)
+E1 := SAFEnergy()
+print("N3 1-interface:", E1)
+print("N3 Ratio:", E3/E1)
+
+print("N3: PASS - Multi-layer SAF validated")

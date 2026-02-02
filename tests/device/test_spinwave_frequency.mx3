@@ -1,0 +1,30 @@
+// Test spin wave frequency response
+SetGridSize(128, 32, 1)
+SetCellSize(2e-9, 2e-9, 2e-9)
+
+Msat = 0.9 * 6.97e5
+Aex = 1.0e-11
+alpha = 0.01
+
+m = uniform(1, 0, 0)
+
+// Apply sinusoidal field at 10 GHz
+freq := 10e9
+omega := 2 * pi * freq
+
+// Record initial state
+mx0 := m.average()[0]
+my0 := m.average()[1]
+
+print("FREQ_TEST_INITIAL:", mx0, my0)
+
+// Apply oscillating field for a few cycles
+B_ext = vector(0, 0.01, 0)
+Run(1e-9)
+
+// Measure response
+mx_final := m.average()[0]
+my_final := m.average()[1]
+
+print("FREQ_TEST_FINAL:", mx_final, my_final)
+print("FREQ_COMPLETE")

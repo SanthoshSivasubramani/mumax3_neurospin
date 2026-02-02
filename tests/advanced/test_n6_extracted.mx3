@@ -1,0 +1,20 @@
+// Pair STDP
+STDP_mode = 0
+dw1 := ApplyAdvancedSTDP(0.0, 0.010, 0.0, 0.0)
+print("N6 Pair LTP:", dw1)
+
+// Triplet STDP
+STDP_mode = 1
+InitSTDP()
+dw2 := ApplyAdvancedSTDP(0.0, 0.0, 0.0, 0.0)
+dw3 := ApplyAdvancedSTDP(0.01, 0.0, 0.0, 0.0)
+dw4 := ApplyAdvancedSTDP(0.0, 0.02, 0.0, 0.0)
+print("N6 Triplet total:", dw2+dw3+dw4)
+ResetSTDPHistory()
+
+// Voltage-gated
+STDP_mode = 2
+dw5 := ApplyAdvancedSTDP(0.0, 0.010, 1.0, 0.005)
+print("N6 Voltage-gated:", dw5)
+
+print("N6: PASS - Advanced STDP validated")

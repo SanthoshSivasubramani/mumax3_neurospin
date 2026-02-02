@@ -1,0 +1,40 @@
+SetGridSize(16, 16, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -0.5e-3
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+
+// Test just 3 field points
+B_ext = vector(0, 0, 0.0)
+relax()
+mz0 := m.Region(0).average()[2]
+mz1 := m.Region(1).average()[2]
+alignment := mz0 * mz1
+E := SAFEnergy()
+print("STATE:", 0.0, alignment, E)
+
+B_ext = vector(0, 0, 0.1)
+relax()
+mz0_2 := m.Region(0).average()[2]
+mz1_2 := m.Region(1).average()[2]
+alignment_2 := mz0_2 * mz1_2
+E_2 := SAFEnergy()
+print("STATE:", 0.1, alignment_2, E_2)
+
+B_ext = vector(0, 0, 0.2)
+relax()
+mz0_3 := m.Region(0).average()[2]
+mz1_3 := m.Region(1).average()[2]
+alignment_3 := mz0_3 * mz1_3
+E_3 := SAFEnergy()
+print("STATE:", 0.2, alignment_3, E_3)
+
+print("COMPLETE")

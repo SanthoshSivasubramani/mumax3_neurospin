@@ -1,0 +1,60 @@
+// Minimal SAF Test: 2 layers, 1 cell each, direct z-neighbors
+// This is the simplest possible SAF geometry
+SetGridSize(16, 16, 2)  // Just 2 z-layers
+SetCellSize(5e-9, 5e-9, 1e-9)
+
+// Each region is exactly one z-layer
+DefRegion(0, Layer(0))  // z=0 only
+DefRegion(1, Layer(1))  // z=1 only
+
+SetSAFLayers(0, 1)
+EnableSAF()
+
+// Strong AF coupling
+J_RKKY = -2e-3
+
+// Apply material
+Msat.setRegion(0, 1.4e6)
+Msat.setRegion(1, 1.4e6)
+Aex.setRegion(0, 1.5e-11)
+Aex.setRegion(1, 1.5e-11)
+Alpha.setRegion(0, 0.02)
+Alpha.setRegion(1, 0.02)
+Ku1.setRegion(0, 0)
+Ku1.setRegion(1, 0)
+
+// CRITICAL: Disable direct exchange coupling
+ext_InterExchange(0, 1, 0)
+
+// Both start parallel +x, layer 1 has tiny tilt
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0.1, 0))  // 10% tilt to seed flip
+
+// Print BEFORE relax
+mx0_before := m.Region(0).average()[0]
+mx1_before := m.Region(1).average()[0]
+print("BEFORE: Layer 0 mx =", mx0_before)
+print("BEFORE: Layer 1 mx =", mx1_before)
+
+relax()
+
+// Print AFTER relax
+mx0 := m.Region(0).average()[0]
+my0 := m.Region(0).average()[1]
+mz0 := m.Region(0).average()[2]
+
+mx1 := m.Region(1).average()[0]
+my1 := m.Region(1).average()[1]
+mz1 := m.Region(1).average()[2]
+
+print("AFTER: Layer 0 m =", mx0, my0, mz0)
+print("AFTER: Layer 1 m =", mx1, my1, mz1)
+print("Product mx0*mx1 =", mx0*mx1)
+
+// Check for ANTIPARALLEL alignment (product < 0)
+// We relax the threshold because they might not be perfectly -1 and +1 if they rotated
+if mx0*mx1 < -0.001 {
+    print("RESULT: PASS - Correctly antiparallel (mx opposite signs)")
+} else {
+    print("RESULT: FAIL - Not antiparallel (Product >= -0.001)")
+}

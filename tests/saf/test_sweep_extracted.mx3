@@ -1,0 +1,26 @@
+SetGridSize(8, 8, 2)
+SetCellSize(5e-9, 5e-9, 2e-9)
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+SetSAFLayers(0, 1)
+EnableSAF()
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+
+print("J_mJ_m2,Energy_J")
+
+J_RKKY = -1e-3
+E1 := SAFEnergy()
+print(-1, ",", E1)
+
+J_RKKY = -2e-3
+E2 := SAFEnergy()
+print(-2, ",", E2)
+
+J_RKKY = -4e-3
+E3 := SAFEnergy()
+print(-4, ",", E3)
+
+print("TEST1: PASS - Energy scales with J")

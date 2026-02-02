@@ -1,0 +1,43 @@
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+EnableSAF()
+SetSAFLayers(0, 1)
+J_RKKY = -2e-3
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+// FIXED: Relaxed time-stepping
+alpha = 0.3           // CHANGED: Higher damping for faster test
+MaxErr = 1e-3         // CHANGED: Relaxed error
+MinDt = 1e-13         // CHANGED: 100× larger
+MaxDt = 1e-10         // CHANGED: 100× larger
+
+m.setRegion(0, uniform(0, 0, 1))
+m.setRegion(1, uniform(0, 0, 1))
+
+print("=== Testing 1 ns with FIXED parameters ===")
+
+// Start from state 0
+theta := 0.0
+B_ext = vector(0.02 * cos(theta), 0.02 * sin(theta), 0)
+relax()
+print("Relaxed to state 0")
+
+// Make LARGER angle change to create stronger torque
+E_start := SAFEnergy()
+t = 0
+theta_next := 10.0 * pi / 180.0  // CHANGED: 10 degree jump instead of 4.5
+B_ext = vector(0.02 * cos(theta_next), 0.02 * sin(theta_next), 0)
+
+print("Starting 1 ns dynamics with 10 degree field rotation...")
+run(1e-9)
+print("COMPLETED!")
+
+time_switch := t
+E_end := SAFEnergy()
+print(sprintf("RESULT:time=%.6e,E_start=%.6e,E_end=%.6e", time_switch, E_start*1e18, E_end*1e18))

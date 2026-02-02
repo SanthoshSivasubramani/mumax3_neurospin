@@ -1,0 +1,26 @@
+
+SetGridSize(16, 16, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2.0e-3
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+
+minimize()
+
+E_saf := SAFEnergy()
+thermal_stab := abs(E_saf) / (1.38e-23 * 300.0)
+
+print("AI_METRIC:thermal_stability:", thermal_stab)
+print("AI_METRIC:energy:", E_saf)

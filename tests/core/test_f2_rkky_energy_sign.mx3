@@ -1,0 +1,26 @@
+// F2: E_RKKY sign (negative for AF ground state)
+SetGridSize(16, 16, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))  // AF
+
+E_af := SAFEnergy()
+
+print("F2: E_RKKY (AF) =", E_af, "J")
+
+if E_af > 0 {
+    print("F2: FAIL - Energy should be negative for AF")
+} else {
+    print("F2: PASS")
+}

@@ -1,0 +1,46 @@
+// MuMax3-SAF-NeuroSpin Test
+// Copyright  2024-2025 Dr. Santhosh Sivasubramani
+// INTRINSIC Lab, IIT Delhi
+
+// Alternative: Use field sweeps instead of dynamics
+SetGridSize(64, 32, 2)
+SetCellSize(2e-9, 2e-9, 2e-9)
+
+DefRegion(0, Layer(0))
+DefRegion(1, Layer(1))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+// Initialize
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+minimize()
+
+E_0 := SAFEnergy()
+print("SWEEP_0:", E_0)
+
+// Field sweep (no dynamics, just minimize at each field)
+B_ext = vector(0, 0.005, 0)
+minimize()
+E_1 := SAFEnergy()
+print("SWEEP_1:", E_1)
+
+B_ext = vector(0, 0.010, 0)
+minimize()
+E_2 := SAFEnergy()
+print("SWEEP_2:", E_2)
+
+B_ext = vector(0, 0.015, 0)
+minimize()
+E_3 := SAFEnergy()
+print("SWEEP_3:", E_3)
+
+print("SWEEP_COMPLETE")

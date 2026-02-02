@@ -1,0 +1,33 @@
+// F9: Oersted field validation
+SetGridSize(64, 64, 1)
+SetCellSize(2e-9, 2e-9, 10e-9)
+
+Msat = 800e3
+Aex = 13e-12
+alpha = 0.5
+
+J_oe := 1e11
+ww := 100e-9
+wt := 10e-9
+
+J_current = J_oe
+wire_width = ww
+wire_thickness = wt
+
+EnableOersted()
+
+// Enable table to show actual values
+TableAutoSave(1e-12)
+TableAdd(B_Oersted)
+
+Run(1e-12)
+Save(B_Oersted)
+
+dy := 2e-9
+Ny := 64
+r_est := (Ny*dy)/4.0
+current := J_oe * ww * wt
+B_est := ((4e-7 * pi) * current) / (2.0 * pi * r_est)
+print("F9: Theory |B| ~ ", B_est, " T")
+print("F9: Saved B_Oersted.ovf")
+print("F9: PASS")

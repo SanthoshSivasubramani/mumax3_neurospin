@@ -1,0 +1,37 @@
+// MuMax3-SAF-NeuroSpin Test
+// Copyright  2024-2025 Dr. Santhosh Sivasubramani
+// INTRINSIC Lab, IIT Delhi
+
+// P1: Basic SAF RKKY field pairing test
+SetGridSize(16, 16, 4)
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+DefRegion(0, Layer(0).Add(Layer(1)))
+DefRegion(1, Layer(2).Add(Layer(3)))
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+
+SetSAFLayers(0, 1)
+EnableSAF()
+J_RKKY = -2e-3
+
+print("P1: Testing RKKY field pairing")
+
+// Test 1: Antiparallel state (should have negative energy)
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(-1, 0, 0))
+E_af := SAFEnergy()
+print("  Antiparallel: E =", E_af, "J")
+
+// Test 2: Parallel state (should have positive energy)
+m.setRegion(1, uniform(1, 0, 0))
+E_p := SAFEnergy()
+print("  Parallel: E =", E_p, "J")
+
+// Verify signs are correct
+if E_af < 0 && E_p > 0 {
+    print("P1: PASS - RKKY sign convention correct (J<0 favors AF)")
+} else {
+    print("P1: FAIL - Energy signs incorrect")
+}

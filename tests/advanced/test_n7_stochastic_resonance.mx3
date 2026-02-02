@@ -1,0 +1,33 @@
+SetGridSize(32, 32, 1)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+// Bistable system (easy/hard axis) for stochastic resonance
+Msat = 800e3
+Aex = 13e-12
+Ku1 = 1e5  // Anisotropy creates barrier
+anisU = vector(1, 0, 0)
+Alpha = 0.1
+
+B_ext = vector(0, 0, 0.02)  // Small bias
+
+print("=== N7: Stochastic Resonance ===")
+
+// Configure scan
+StochRes_noise_scan_min = 0
+StochRes_noise_scan_max = 400
+StochRes_noise_steps = 8
+StochRes_measure_time = 2e-9
+
+// Initialize in one potential well
+m = uniform(1, 0, 0)
+relax()
+
+ThermSeed(42)
+
+print("Scanning noise levels for stochastic resonance...")
+
+// Find optimal noise level
+result := FindStochasticResonance()
+
+print("=== N7 Complete ===")
+print("Stochastic resonance demonstrates noise-enhanced dynamics")

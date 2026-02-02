@@ -1,0 +1,54 @@
+// Test Script 6 Logic Operations APIs
+// Testing: Boolean logic, cascaded operations, multi-state
+
+SetGridSize(16, 16, 6)
+SetCellSize(3e-9, 3e-9, 2e-9)
+
+// Define 3 layers for logic gates
+DefRegion(0, Layer(0).Add(Layer(1)))  // Input A
+DefRegion(1, Layer(2).Add(Layer(3)))  // Input B
+DefRegion(2, Layer(4).Add(Layer(5)))  // Output
+
+ApplyMaterial(0, "CoFeB")
+ApplyMaterial(1, "CoFeB")
+ApplyMaterial(2, "CoFeB")
+
+Msat.SetRegion(0, 0.9 * 6.97e5)
+Msat.SetRegion(1, 0.9 * 6.97e5)
+Msat.SetRegion(2, 0.9 * 6.97e5)
+
+// Set up SAF coupling between layers
+SetSAFLayers(0, 1)
+SetSAFLayers(1, 2)
+EnableSAF()
+J_RKKY = -1.0e-3
+
+// Initialize: Input A=1 (right), Input B=1 (right)
+m.setRegion(0, uniform(1, 0, 0))
+m.setRegion(1, uniform(1, 0, 0))
+m.setRegion(2, uniform(1, 0, 0))
+
+minimize()
+
+// Test 1: Read initial states
+print("TEST1_INPUT_A:", m.Region(0).average()[0])
+print("TEST1_INPUT_B:", m.Region(1).average()[0])
+print("TEST1_OUTPUT:", m.Region(2).average()[0])
+
+// Test 2: Apply field to flip Input B (simulate B=0)
+B_ext = vector(-0.15, 0, 0)
+minimize()
+print("TEST2_INPUT_A:", m.Region(0).average()[0])
+print("TEST2_INPUT_B:", m.Region(1).average()[0])
+print("TEST2_OUTPUT:", m.Region(2).average()[0])
+
+// Test 3: Check SAF energies
+E_01 := SAFEnergy()
+print("TEST3_SAF_ENERGY:", E_01)
+
+// Test 4: Multi-layer interaction
+print("TEST4_LAYER0_MX:", m.Region(0).average()[0])
+print("TEST4_LAYER1_MX:", m.Region(1).average()[0])
+print("TEST4_LAYER2_MX:", m.Region(2).average()[0])
+
+print("TESTS_COMPLETE")

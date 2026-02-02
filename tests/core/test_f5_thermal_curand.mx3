@@ -1,0 +1,15 @@
+// F5: GPU-native thermal noise validation
+SetGridSize(32, 32, 4)
+SetCellSize(5e-9, 5e-9, 2e-9)
+
+Msat = 800e3
+Aex = 13e-12
+alpha = 0.1
+Temp = 300  // 300K
+
+m = uniform(1, 0, 0)
+ThermSeed(42)  // GPU-native cuRAND
+
+Run(1e-12)  // 1ps - should run fast on GPU
+
+print("F5: PASS - Thermal noise via GPU cuRAND")

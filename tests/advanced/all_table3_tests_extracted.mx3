@@ -1,0 +1,226 @@
+// ============================================================
+// MuMax3-SAF: Table 3 Validation Suite (single .mx3 script)
+// ============================================================
+// Validations:
+// 1) SAF RKKY: constant J, oscillatory J(d), temperature dependence,
+//    multi-interface additivity (two interfaces vs one)
+// 2) VCMA: first-class field sanity (Save(B_VCMA), theory prefactor)
+// 3) SOT (DL+FL): field sanity (Save(B_SOT), theory prefactor)
+// 4) STT (CIP): zero-gradient sanity (Save(B_STT) ~ 0 field)
+// 5) Oersted: per-voxel Biot-Savart sanity (Save(B_Oersted), estimate)
+
+// -------------
+// A) SAF RKKY
+// -------------
+print("============================================================")
+print("A) SAF RKKY: constant J, oscillatory J(d), temperature dependence, multi-interface")
+
+// A1. Constant J, aligned vs anti-aligned
+SetGridsize(16,16,2)
+SetCellsize(2e-9, 2e-9, 1e-9)
+
+DefRegion(0, LayerRange(0,1)) // bottom plane
+DefRegion(1, LayerRange(1,2)) // top plane
+
+Msat.SetRegion(0, 1e6)
+Msat.SetRegion(1, 1e6)
+
+ClearSAFLayers()
+SetSAFLayers(0,1)
+EnableSAF()
+
+// Aligned (+z, +z)
+m.SetRegion(0, Uniform(0,0,1))
+m.SetRegion(1, Uniform(0,0,1))
+
+J_RKKY = -2e-3
+J_RKKY_oscillatory = 0
+E_aligned := SAFEnergy()
+
+// Expected E = -J * (m1.m2) * A_cell * (Nx*Ny) = -( -2e-3 ) * 4e-18 * 256 = +2.048e-18 J
+Jval := -2e-3
+expected_A := 2e-9*2e-9
+expected_pairs := 256.0
+E_expected_align := -Jval * expected_A * expected_pairs
+print("A1 aligned: E_expected=", E_expected_align, " J, E_got=", E_aligned, " J")
+
+// Anti-aligned (+z, -z)
+m.SetRegion(1, Uniform(0,0,-1))
+E_antialigned := SAFEnergy()
+print("A1 anti-aligned: E_expected=", -E_expected_align, " J, E_got=", E_antialigned, " J")
+
+// A2. Oscillatory J(d): enable and show sign/decay
+J_RKKY_oscillatory = 1
+J_RKKY_amplitude = -2e-3
+J_RKKY_wavelength = 1e-9
+J_RKKY_phase = 0
+J_RKKY_decay_length = 0
+
+// Restore aligned to isolate J(d) sign
+m.SetRegion(1, Uniform(0,0,1))
+E_osc := SAFEnergy()
+print("A2 oscillatory: E_got=", E_osc, " J")
+
+// Add decay
+J_RKKY_decay_length = 5e-9
+E_osc_decay := SAFEnergy()
+print("A2 oscillatory with decay: E_got=", E_osc_decay, " J")
+
+// A3. Temperature-dependent RKKY: (1 - (T/Tc)^2)
+J_RKKY_temp_dependent = 1
+J_RKKY_Tc = 673
+Temperature.SetRegion(0, 0)
+E_T0 := SAFEnergy()
+Temperature.SetRegion(0, 300)
+E_T300 := SAFEnergy()
+ratio_expected := 1.0 - (300.0/673.0)*(300.0/673.0)
+print("A3 temp-dep: ratio_expected=", ratio_expected, " ratio_got=", E_T300/E_T0)
+
+// A4. Multi-interface additivity: 3 slabs => 2 interfaces
+SetGridsize(8,8,6)
+SetCellsize(5e-9,5e-9,2e-9)
+
+DefRegion(10, LayerRange(0,2)) // FM1 (2 layers)
+DefRegion(11, LayerRange(2,4)) // FM2 (2 layers)
+DefRegion(12, LayerRange(4,6)) // FM3 (2 layers)
+// Set Ms globally to avoid missing new regions
+Msat = 1e6
+
+ClearSAFLayers()
+SetSAFLayers(10,11)
+SetSAFLayers(11,12)
+
+J_RKKY_oscillatory = 0
+J_RKKY = -2e-3
+
+m.SetRegion(10, Uniform(1,0,0))
+m.SetRegion(11, Uniform(-1,0,0))
+m.SetRegion(12, Uniform(1,0,0))
+E_two := SAFEnergy()
+
+ClearSAFLayers()
+SetSAFLayers(10,11)
+E_one := SAFEnergy()
+print("A4 multi-interface: E_two=", E_two, " J, E_one=", E_one, " J, ratio=", E_two/E_one, " (expect ~2)")
+
+print("A) SAF RKKY section complete")
+
+// --------
+// B) VCMA
+// --------
+print("============================================================")
+print("B) VCMA: first-class field sanity (Save(B_VCMA), theory prefactor)")
+
+SetGridsize(16,16,1)
+SetCellsize(3e-9,3e-9,1e-9)
+DefRegion(0, LayerRange(0,1))
+
+// Use scalar local copies for numeric theory (avoid RegionwiseScalar type)
+ms_vcma := 1.1e6
+xi_val := 150e-15
+t_int_val := 1e-9
+E_val := 1.0e9
+
+Msat = ms_vcma
+m.SetRegion(0, Uniform(0,0,1)) // m_z=+1
+xi_VCMA = xi_val
+t_interface = t_int_val
+E_field = E_val
+
+EnableVCMA()
+Run(0)
+Save(B_VCMA)
+
+// Theory: B_vcma_z = 2*xi*E*m_z / ((4e-7*pi)*Ms*t_interface)
+pref_vcma := (2.0 * xi_val * E_val) / ((4e-7 * pi) * ms_vcma * t_int_val)
+print("B) VCMA theory |Bz| ~ ", pref_vcma, " T (m_z=+1)")
+print("B) Saved B_VCMA.ovf")
+
+// ------
+// C) SOT
+// ------
+print("============================================================")
+print("C) SOT: DL+FL torque sanity (Save(B_SOT), theory prefactor)")
+
+SetGridsize(16,16,1)
+SetCellsize(3e-9,3e-9,1e-9)
+DefRegion(0, LayerRange(0,1))
+
+ms_sot := 1.0e6
+J_sot := 5e11
+theta_SH := 0.1
+theta_FL := 0.02
+
+Msat = ms_sot
+m.SetRegion(0, Uniform(0.70710678,0,0.70710678))
+J_current = J_sot
+SOT_theta_SH = theta_SH
+SOT_theta_FL = theta_FL
+
+EnableSOT()
+Run(0)
+Save(B_SOT)
+
+// Theory prefactor: (hbar*J)/(2 e Ms t)
+HBAR := 1.054571817e-34
+e := 1.602176634e-19
+t = 1e-9
+pref_sot := (HBAR * J_sot) / (2.0 * e * ms_sot * t)
+print("C) SOT theory prefactor ~ ", pref_sot, " T (before theta factors)")
+print("C) Saved B_SOT.ovf")
+
+// -----
+// D) STT
+// -----
+print("============================================================")
+print("D) STT (CIP): zero-gradient sanity (Save(B_STT) ~ 0)")
+
+SetGridsize(32,8,1)
+SetCellsize(3e-9,3e-9,1e-9)
+Msat = 8.0e5
+m = Uniform(1,0,0) // No x-gradient -> B_STT should be ~0
+
+J_current = 1e12
+STT_polarization = 0.4
+STT_xi_adiabatic = 1.0
+STT_xi_nonadiabatic = 0.3
+EnableSTT()
+Run(0)
+Save(B_STT)
+print("D) Saved B_STT.ovf (should be near zero for uniform m)")
+
+// ---------
+// E) Oersted
+// ---------
+print("============================================================")
+print("E) Oersted: per-voxel Biot-Savart sanity (Save(B_Oersted), estimate)")
+
+SetGridsize(32,32,2)
+SetCellsize(5e-9,5e-9,2e-9)
+Msat = 1e6
+
+J_oe := 1e11
+ww := 100e-9
+wt := 10e-9
+J_current = J_oe
+wire_width = ww
+wire_thickness = wt
+
+EnableOersted()
+Run(0)
+Save(B_Oersted)
+
+// Estimate at r ~ (Ny*dy)/4
+dy := 5e-9
+Ny := 32
+r_est := (Ny*dy)/4.0
+current := J_oe * ww * wt
+B_est := ((4e-7 * pi) * current) / (2.0 * pi * r_est)
+print("E) Oersted analytic |B| at r~", r_est*1e9, " nm: ~ ", B_est, " T")
+print("E) Saved B_Oersted.ovf")
+
+// ----
+// End
+// ----
+print("============================================================")
+print("All Table 3 tests executed. Inspect table.txt for energies/ratios and OVFs for field maps.")

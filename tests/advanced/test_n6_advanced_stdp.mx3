@@ -1,0 +1,31 @@
+print("=== N6: Advanced STDP Rules ===")
+
+// Test 1: Pair-based STDP
+print("\n--- Test 1: Pair-based STDP ---")
+STDP_mode = 0
+
+dw1 := ApplyAdvancedSTDP(0.0, 0.010, 0.0, 0.0)
+dw2 := ApplyAdvancedSTDP(0.010, 0.0, 0.0, 0.0)
+print("Pair STDP: LTP=", dw1, ", LTD=", dw2)
+
+// Test 2: Triplet STDP
+print("\n--- Test 2: Triplet STDP ---")
+STDP_mode = 1
+InitSTDP()
+
+dw_t1 := ApplyAdvancedSTDP(0.000, 0.000, 0.0, 0.0)
+dw_t2 := ApplyAdvancedSTDP(0.010, 0.000, 0.0, 0.0)
+dw_t3 := ApplyAdvancedSTDP(0.000, 0.020, 0.0, 0.0)
+print("Triplet STDP total:", dw_t1 + dw_t2 + dw_t3)
+
+ResetSTDPHistory()
+
+// Test 3: Voltage-gated STDP
+print("\n--- Test 3: Voltage-gated STDP ---")
+STDP_mode = 2
+
+dw_v1 := ApplyAdvancedSTDP(0.0, 0.010, 1.0, 0.005)
+dw_v2 := ApplyAdvancedSTDP(0.0, 0.010, 0.2, 0.005)
+print("Voltage-gated: With V=", dw_v1, ", Without V=", dw_v2)
+
+print("\n=== N6 Complete ===")
